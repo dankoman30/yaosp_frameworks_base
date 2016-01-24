@@ -243,7 +243,13 @@ public class NavigationBarView extends LinearLayout {
     private final OnTouchListener mNavButtonsTouchListener = new OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
+            if (mDimNavButtons) {
                 onNavButtonTouched();
+            }
+            if (Settings.System.getIntForUser(mContext.getContentResolver(),
+                        Settings.System.DOUBLE_TAP_SLEEP_NAVBAR, 0, UserHandle.USER_CURRENT) == 1) {
+                mDoubleTapGesture.onTouchEvent(event);
+            }
             return true;
         }
     };
@@ -404,10 +410,6 @@ public class NavigationBarView extends LinearLayout {
         if (mDeadZone != null && event.getAction() == MotionEvent.ACTION_OUTSIDE) {
             mDeadZone.poke(event);
         }
-        if (Settings.System.getIntForUser(mContext.getContentResolver(),
-                    Settings.System.DOUBLE_TAP_SLEEP_NAVBAR, 0, UserHandle.USER_CURRENT) == 1)
-            mDoubleTapGesture.onTouchEvent(event);
-
         return super.onTouchEvent(event);
     }
 
@@ -1128,11 +1130,10 @@ public class NavigationBarView extends LinearLayout {
 
         if (getImeSwitchButton() != null)
             getImeSwitchButton().setOnClickListener(mImeSwitcherClickListener);
-        if (mDimNavButtons) {
-            final ViewGroup navButtons = getNavButtons();
-            if (navButtons != null)
-                navButtons.setOnTouchListener(mNavButtonsTouchListener);
-        }
+
+        final ViewGroup navButtons = getNavButtons();
+        if (navButtons != null)
+            navButtons.setOnTouchListener(mNavButtonsTouchListener);
 
         updateRTLOrder();
     }
@@ -1159,11 +1160,10 @@ public class NavigationBarView extends LinearLayout {
 
         if (getImeSwitchButton() != null)
             getImeSwitchButton().setOnClickListener(mImeSwitcherClickListener);
-        if (mDimNavButtons) {
-            final ViewGroup navButtons = getNavButtons();
-            if (navButtons != null)
-                navButtons.setOnTouchListener(mNavButtonsTouchListener);
-        }
+
+        final ViewGroup navButtons = getNavButtons();
+        if (navButtons != null)
+            navButtons.setOnTouchListener(mNavButtonsTouchListener);
 
         mDeadZone = (DeadZone) mCurrentView.findViewById(R.id.deadzone);
 
